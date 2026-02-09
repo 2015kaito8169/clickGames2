@@ -1,15 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 using System.Collections;
 
 public class ClickGame : MonoBehaviour {
     [Header("UI Elements")]
-    public TextMeshProUGUI scoreText;
-    public TextMeshProUGUI timeText;
-    public TextMeshProUGUI highScoreText;
-    public TextMeshProUGUI rankText;
-    public TextMeshProUGUI msgText;
+    public Text scoreText;
+    public Text timeText;
+    public Text highScoreText;
+    public Text rankText;
+    public Text msgText;
     public Button mainButton;
     public Button retryButton;
 
@@ -39,15 +38,16 @@ public class ClickGame : MonoBehaviour {
 
         if (!active) {
             active = true;
-            mainButton.GetComponentInChildren<TextMeshProUGUI>().text = "HIT!!";
+            mainButton.GetComponentInChildren<Text>().text = "HIT!!";
             StartCoroutine(StartTimer());
-            StartCoroutine(BGMTask()); // BGM開始
+            StartCoroutine(BGMTask());
         }
 
         score++;
         scoreText.text = score.ToString();
     }
 
+    
     IEnumerator StartTimer() {
         while (timeLeft > 0) {
             yield return new WaitForSeconds(1f);
@@ -70,7 +70,7 @@ public class ClickGame : MonoBehaviour {
     void FinishGame() {
         active = false;
         mainButton.interactable = false;
-        mainButton.GetComponentInChildren<TextMeshProUGUI>().text = "FINISH";
+        mainButton.GetComponentInChildren<Text>().text = "FINISH";
 
         if (score > savedScore) {
             PlayerPrefs.SetInt("ultra_click_score", score);
@@ -94,13 +94,14 @@ public class ClickGame : MonoBehaviour {
     }
 
     string GetRank(int s) {
-        if (s >= 250) return "fraud (不正)";
-       if (s >= 200)  return "GOOD (神)"; 
-      if (s >= 150)  return "LEGEND (伝説)";
-        if (s >= 100)  return "PRO (超人)";
-        if (s >= 80)  return "semi-pro(上級者)";
+        if (s >= 1000) return "fraud        if (s >= 250) return         if (s >= 250) return (これ絶対あなた不正したでしょ神より上になることまずないし10秒だよふつう1000回より上に行けるか?)";
+　　　　 if (s >= 250) return "fraud (不正)";
+        if (s >= 200) return "GOD (神)"; 
+        if (s >= 150) return "LEGEND (伝説)";
+        if (s >= 100) return "PRO (超人)";
+        if (s >= 80)  return "semi-pro (上級者)";
         if (s >= 50)  return "Amateur (中級者)";
-      　 return "NOOB (初心者)";
+        return "NOOB (初心者)";
     }
 
     void PlayTone(float freq, float duration, float volume = 0.1f) {
