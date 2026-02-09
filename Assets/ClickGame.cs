@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 public class ClickGame : MonoBehaviour {
     private int s = 0;
-    private Text t;
+    private Text;
     void Start() {
         GameObject c = new GameObject("C");
         c.AddComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
