@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-using Unityroom.Api;
 
 public class ClickGame : MonoBehaviour {
     public Text scoreText;
@@ -18,9 +17,6 @@ public class ClickGame : MonoBehaviour {
     private int savedScore;
 
     void Start() {
-        // ここでAPIキーを無理やりセット（設定画面をいじらなくて済む方法）
-        UnityroomApiClient.Instance.Initialize("MbDTMCsbd6UwYqzTOEARbyMFK2CU5j38F0IA4KRO1G7y+Tz+cQr2MHmOoONyaSfA5V71vCg3iFj74qXbCBEVzw==");
-        
         savedScore = PlayerPrefs.GetInt("ultra_click_score", 0);
         if(highScoreText) highScoreText.text = savedScore.ToString();
         if(retryButton) retryButton.gameObject.SetActive(false);
@@ -36,7 +32,6 @@ public class ClickGame : MonoBehaviour {
             Text btnText = mainButton.GetComponentInChildren<Text>();
             if(btnText) btnText.text = "HIT!!";
             StartCoroutine(StartTimer());
-            StartCoroutine(BGMTask());
         }
         score++;
         if(scoreText) scoreText.text = score.ToString();
@@ -57,26 +52,13 @@ public class ClickGame : MonoBehaviour {
         if(score > savedScore) {
             PlayerPrefs.SetInt("ultra_click_score", score);
             if(highScoreText) highScoreText.text = score.ToString();
-            msgText.text = "NEW RECORD!";
+            if(msgText) msgText.text = "NEW RECORD!";
             StartCoroutine(Fanfare());
-            
-            // ボードNo.1へ送信。unityroom側で「ボード1」が作られていれば届きます
-            UnityroomApiClient.Instance.SendScore(1, (float)score, ScoreOrder.OrderByDescending);
         } else {
             PlayTone(150f, 0.5f, 0.1f);
         }
-        rankText.text = GetRank(score);
-        retryButton.gameObject.SetActive(true);
-    }
-
-    IEnumerator BGMTask() {
-        float[] notes = { 110f, 130f, 110f, 146f };
-        int step = 0;
-        while (active) {
-            PlayTone(notes[step % notes.length], 0.2f, 0.05f);
-            step++;
-            yield return new WaitForSeconds(0.25f);
-        }
+        if(rankText) rankText.text = GetRank(score);
+        if(retryButton) retryButton.gameObject.SetActive(true);
     }
 
     IEnumerator Fanfare() {
