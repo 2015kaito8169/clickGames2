@@ -1,0 +1,15 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!129 &1
+PlayerSettings:
+  serializedVersion: 22
+  productName: ClickGame
+  defaultIsFullScreen: 1
+  defaultScreenWidth: 960
+  defaultScreenHeight: 600
+  runInBackground: 1
+  captureSingleScreen: 0
+  muteOtherAudioSources: 0
+  WebGLTargetFormat: 0
+  webGLCompressionFormat: 2 # Disabled (unityroom推奨)
+  webGLMemorySize: 256
