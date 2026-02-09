@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using Unityroom.Api;
 
 public class ClickGame : MonoBehaviour {
-    [Header("UI Elements")]
     public Text scoreText;
     public Text timeText;
     public Text highScoreText;
@@ -16,45 +16,57 @@ public class ClickGame : MonoBehaviour {
     private float timeLeft = 10f;
     private bool active = false;
     private int savedScore;
-    private AudioSource audioSource;
 
     void Start() {
-        audioSource = gameObject.AddComponent<AudioSource>();
+        // ここでAPIキーを無理やりセット（設定画面をいじらなくて済む方法）
+        UnityroomApiClient.Instance.Initialize("MbDTMCsbd6UwYqzTOEARbyMFK2CU5j38F0IA4KRO1G7y+Tz+cQr2MHmOoONyaSfA5V71vCg3iFj74qXbCBEVzw==");
+        
         savedScore = PlayerPrefs.GetInt("ultra_click_score", 0);
-        highScoreText.text = savedScore.ToString();
-        
-        retryButton.gameObject.SetActive(false);
-        mainButton.onClick.AddListener(OnClickButton);
-        retryButton.onClick.AddListener(ResetGame);
-        
-        msgText.text = "";
-        rankText.text = "";
+        if(highScoreText) highScoreText.text = savedScore.ToString();
+        if(retryButton) retryButton.gameObject.SetActive(false);
+        if(mainButton) mainButton.onClick.AddListener(OnClickButton);
+        if(retryButton) retryButton.onClick.AddListener(ResetGame);
     }
 
     void OnClickButton() {
         if (timeLeft <= 0) return;
-
         PlayTone(440 + score * 2, 0.1f);
-
         if (!active) {
             active = true;
-            mainButton.GetComponentInChildren<Text>().text = "HIT!!";
+            Text btnText = mainButton.GetComponentInChildren<Text>();
+            if(btnText) btnText.text = "HIT!!";
             StartCoroutine(StartTimer());
             StartCoroutine(BGMTask());
         }
-
         score++;
-        scoreText.text = score.ToString();
+        if(scoreText) scoreText.text = score.ToString();
     }
 
-    
     IEnumerator StartTimer() {
         while (timeLeft > 0) {
             yield return new WaitForSeconds(1f);
             timeLeft--;
-            timeText.text = timeLeft.ToString();
+            if(timeText) timeText.text = timeLeft.ToString();
         }
         FinishGame();
+    }
+
+    void FinishGame() {
+        active = false;
+        mainButton.interactable = false;
+        if(score > savedScore) {
+            PlayerPrefs.SetInt("ultra_click_score", score);
+            if(highScoreText) highScoreText.text = score.ToString();
+            msgText.text = "NEW RECORD!";
+            StartCoroutine(Fanfare());
+            
+            // ボードNo.1へ送信。unityroom側で「ボード1」が作られていれば届きます
+            UnityroomApiClient.Instance.SendScore(1, (float)score, ScoreOrder.OrderByDescending);
+        } else {
+            PlayTone(150f, 0.5f, 0.1f);
+        }
+        rankText.text = GetRank(score);
+        retryButton.gameObject.SetActive(true);
     }
 
     IEnumerator BGMTask() {
@@ -67,24 +79,6 @@ public class ClickGame : MonoBehaviour {
         }
     }
 
-    void FinishGame() {
-        active = false;
-        mainButton.interactable = false;
-        mainButton.GetComponentInChildren<Text>().text = "FINISH";
-
-        if (score > savedScore) {
-            PlayerPrefs.SetInt("ultra_click_score", score);
-            highScoreText.text = score.ToString();
-            msgText.text = "🔥 NEW RECORD! 🔥";
-            StartCoroutine(Fanfare());
-        } else {
-            PlayTone(150f, 0.5f, 0.1f);
-        }
-
-        rankText.text = GetRank(score);
-        retryButton.gameObject.SetActive(true);
-    }
-
     IEnumerator Fanfare() {
         float[] f = { 523f, 659f, 783f };
         foreach (float n in f) {
@@ -94,31 +88,27 @@ public class ClickGame : MonoBehaviour {
     }
 
     string GetRank(int s) {
-        if (s >= 1000) return "fraud        if (s >= 250) return         if (s >= 250) return (これ絶対あなた不正したでしょ神より上になることまずないし10秒だよふつう1000回より上に行けるか?)";
-　　　　 if (s >= 250) return "fraud (不正)";
-        if (s >= 200) return "GOD (神)"; 
-        if (s >= 150) return "LEGEND (伝説)";
-        if (s >= 100) return "PRO (超人)";
-        if (s >= 80)  return "semi-pro (上級者)";
-        if (s >= 50)  return "Amateur (中級者)";
-        return "NOOB (初心者)";
+        if (s >= 250) return "FRAUD";
+        if (s >= 200) return "GOD";
+        if (s >= 150) return "LEGEND";
+        if (s >= 100) return "PRO";
+        if (s >= 80) return "SEMI-PRO";
+        if (s >= 50) return "AMATEUR";
+        return "NOOB";
     }
 
-    void PlayTone(float freq, float duration, float volume = 0.1f) {
-        GameObject tone = new GameObject("Tone");
-        AudioSource source = tone.AddComponent<AudioSource>();
-        int samplerate = 44100;
-        AudioClip clip = AudioClip.Create("Tone", (int)(samplerate * duration), 1, samplerate, false);
-        float[] data = new float[clip.samples];
-        for (int i = 0; i < data.Length; i++) {
-            data[i] = Mathf.Sin(2 * Mathf.PI * freq * i / samplerate) * volume;
-        }
-        clip.SetData(data, 0);
-        source.PlayOneShot(clip);
-        Destroy(tone, duration + 0.1f);
+    void PlayTone(float f, float d, float v = 0.1f) {
+        GameObject t = new GameObject("T");
+        AudioSource s = t.AddComponent<AudioSource>();
+        AudioClip c = AudioClip.Create("T", (int)(44100 * d), 1, 44100, false);
+        float[] dat = new float[c.samples];
+        for (int i = 0; i < dat.Length; i++) dat[i] = Mathf.Sin(2 * Mathf.PI * f * i / 44100) * v;
+        c.SetData(dat, 0);
+        s.PlayOneShot(c);
+        Destroy(t, d + 0.1f);
     }
 
     void ResetGame() {
-        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }
 }
