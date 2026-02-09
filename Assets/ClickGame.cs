@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 
-public class TypingGame : MonoBehaviour {
+public class ClickGame : MonoBehaviour {
     [Header("UI Elements")]
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI timeText;
