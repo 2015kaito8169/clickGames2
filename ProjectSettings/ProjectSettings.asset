@@ -11,5 +11,5 @@ PlayerSettings:
   captureSingleScreen: 0
   muteOtherAudioSources: 0
   WebGLTargetFormat: 0
-  webGLCompressionFormat: 2 # Disabled (unityroom推奨)
+  webGLCompressionFormat: 2 
   webGLMemorySize: 256
