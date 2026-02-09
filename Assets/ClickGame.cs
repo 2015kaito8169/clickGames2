@@ -1,120 +1,123 @@
-StringBuilder htmlBuilder = new StringBuilder();
-htmlBuilder.Append("<!DOCTYPE html>");
-htmlBuilder.Append("<html lang=\"ja\">");
-htmlBuilder.Append("<head>");
-htmlBuilder.Append("    <meta charset=\"UTF-8\">");
-htmlBuilder.Append("    <title>クリック連打</title>");
-htmlBuilder.Append("    <style>");
-htmlBuilder.Append("        body { font-family: 'Courier New', sans-serif; text-align: center; background: #000; color: #0f0; padding-top: 30px; overflow: hidden; }");
-htmlBuilder.Append("        #btn { width: 160px; height: 160px; border-radius: 50%; border: 4px solid #0f0; background: transparent; color: #0f0; font-size: 20px; font-weight: bold; cursor: pointer; transition: 0.05s; outline: none; box-shadow: 0 0 15px #0f0; }");
-htmlBuilder.Append("        #btn:active { background: #0f0; color: #000; transform: scale(1.1); }");
-htmlBuilder.Append("        #btn:disabled { border-color: #333; color: #333; box-shadow: none; }");
-htmlBuilder.Append("        .info { font-size: 1.2rem; margin: 10px; }");
-htmlBuilder.Append("        .high-score { color: #ffeb3b; text-shadow: 0 0 10px #ffeb3b; }");
-htmlBuilder.Append("        #retry-btn { display: none; padding: 10px 20px; font-size: 18px; background: #fff; color: #000; border: none; cursor: pointer; margin-top: 15px; font-weight: bold; }");
-htmlBuilder.Append("        #rank { font-size: 2rem; color: #ff00ff; margin-top: 10px; font-weight: bold; text-shadow: 0 0 10px #ff00ff; }");
-htmlBuilder.Append("    </style>");
-htmlBuilder.Append("</head>");
-htmlBuilder.Append("<body>");
-htmlBuilder.Append("    <h1>CLICKER OS v2.6</h1>");
-htmlBuilder.Append("    <div class=\"info\">BEST: <span id=\"highScore\" class=\"high-score\">0</span></div>");
-htmlBuilder.Append("    <div class=\"info\">TIME: <span id=\"time\">10</span>s | SCORE: <span id=\"score\">0</span></div>");
-htmlBuilder.Append("    ");
-htmlBuilder.Append("    <button id=\"btn\">INITIALIZE</button><br>");
-htmlBuilder.Append("    <div id=\"rank\"></div>");
-htmlBuilder.Append("    <button id=\"retry-btn\" onclick=\"resetGame()\">REBOOT</button>");
-htmlBuilder.Append("    <p id=\"msg\"></p>");
-htmlBuilder.Append("");
-htmlBuilder.Append("    <script>");
-htmlBuilder.Append("        let score = 0, timeLeft = 10, active = false, timerId = null, bgmId = null;");
-htmlBuilder.Append("        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();");
-htmlBuilder.Append("");
-htmlBuilder.Append("        function playSound(f, type, d, vol = 0.1) {");
-htmlBuilder.Append("            const o = audioCtx.createOscillator(), g = audioCtx.createGain();");
-htmlBuilder.Append("            o.type = type; o.frequency.setValueAtTime(f, audioCtx.currentTime);");
-htmlBuilder.Append("            g.gain.setValueAtTime(vol, audioCtx.currentTime);");
-htmlBuilder.Append("            g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + d);");
-htmlBuilder.Append("            o.connect(g); g.connect(audioCtx.destination);");
-htmlBuilder.Append("            o.start(); o.stop(audioCtx.currentTime + d);");
-htmlBuilder.Append("        }");
-htmlBuilder.Append("");
-htmlBuilder.Append("        function startBGM() {");
-htmlBuilder.Append("            let step = 0;");
-htmlBuilder.Append("            const notes = [110, 110, 146, 110, 164, 110, 146, 130]; ");
-htmlBuilder.Append("            bgmId = setInterval(() => {");
-htmlBuilder.Append("                playSound(notes[step % notes.length], 'square', 0.2, 0.05);");
-htmlBuilder.Append("                step++;");
-htmlBuilder.Append("            }, 250);");
-htmlBuilder.Append("        }");
-htmlBuilder.Append("");
-htmlBuilder.Append("        const btn = document.getElementById('btn'), retryBtn = document.getElementById('retry-btn');");
-htmlBuilder.Append("        const scoreDisp = document.getElementById('score'), timeDisp = document.getElementById('time');");
-htmlBuilder.Append("        const highScoreDisp = document.getElementById('highScore'), rankDisp = document.getElementById('rank');");
-htmlBuilder.Append("");
-htmlBuilder.Append("        let savedScore = localStorage.getItem('ultra_click_score') || 0;");
-htmlBuilder.Append("        highScoreDisp.innerText = savedScore;");
-htmlBuilder.Append("");
-htmlBuilder.Append("        btn.onclick = () => {");
-htmlBuilder.Append("            if (timeLeft <= 0) return;");
-htmlBuilder.Append("            playSound(440 + score, 'triangle', 0.1);");
-htmlBuilder.Append("            if (!active) {");
-htmlBuilder.Append("                active = true;");
-htmlBuilder.Append("                btn.innerText = \"PUSH\";");
-htmlBuilder.Append("                startBGM();");
-htmlBuilder.Append("                timerId = setInterval(() => {");
-htmlBuilder.Append("                    timeLeft--; timeDisp.innerText = timeLeft;");
-htmlBuilder.Append("                    if (timeLeft <= 0) { clearInterval(timerId); clearInterval(bgmId); finish(); }");
-htmlBuilder.Append("                }, 1000);");
-htmlBuilder.Append("            }");
-htmlBuilder.Append("            score++; scoreDisp.innerText = score;");
-htmlBuilder.Append("        };");
-htmlBuilder.Append("");
-htmlBuilder.Append("        function getRank(s) {");
-htmlBuilder.Append("            if (s >= 1000) return\"fraud(あなた絶対不正してない?)\"");
-htmlBuilder.Append("			if (s >= 200) return \"GOD (神さまあ)\";");
-htmlBuilder.Append("            if (s >= 150)  return \"AI(AIを超えた人!)\";");
-htmlBuilder.Append("            if (s >= 80)  return \"LEGEND (あなたすごいよ！)\";");
-htmlBuilder.Append("            if (s >= 70)  return \"PRO (すごいじゃん)\";");
-htmlBuilder.Append("            if (s >= 40)  return \"AMATEUR (速いですね)\";");
-htmlBuilder.Append("            return \"NOOB (初心者)\";");
-htmlBuilder.Append("        }");
-htmlBuilder.Append("");
-htmlBuilder.Append("        ");
-htmlBuilder.Append("function finish() {");
-htmlBuilder.Append("    btn.disabled = true;");
-htmlBuilder.Append("    ");
-htmlBuilder.Append("    ");
-htmlBuilder.Append("    let currentBest = parseInt(localStorage.getItem('ultra_click_score')) || 0;");
-htmlBuilder.Append("");
-htmlBuilder.Append("    if (score > currentBest) {");
-htmlBuilder.Append("        ");
-htmlBuilder.Append("        localStorage.setItem('ultra_click_score', score);");
-htmlBuilder.Append("        highScoreDisp.innerText = score;");
-htmlBuilder.Append("        ");
-htmlBuilder.Append("        [523.25, 659.25, 783.99].forEach((f, i) => ");
-htmlBuilder.Append("            setTimeout(() => playSound(f, 'sine', 0.4, 0.1), i * 100)");
-htmlBuilder.Append("        );");
-htmlBuilder.Append("        document.getElementById('msg').innerText = \"🔥 NEW RECORD!! 🔥\";");
-htmlBuilder.Append("    } else {");
-htmlBuilder.Append("        highScoreDisp.innerText = currentBest;");
-htmlBuilder.Append("        playSound(150, 'sawtooth', 0.5, 0.1); ");
-htmlBuilder.Append("        document.getElementById('msg').innerText = \"GAME OVER\";");
-htmlBuilder.Append("    }");
-htmlBuilder.Append("    ");
-htmlBuilder.Append("    rankDisp.innerText = getRank(score);");
-htmlBuilder.Append("    retryBtn.style.display = \"inline-block\";");
-htmlBuilder.Append("}");
-htmlBuilder.Append("");
-htmlBuilder.Append("");
-htmlBuilder.Append("        function resetGame() {");
-htmlBuilder.Append("            score = 0; timeLeft = 10; active = false;");
-htmlBuilder.Append("            scoreDisp.innerText = 0; timeDisp.innerText = 10;");
-htmlBuilder.Append("            rankDisp.innerText = \"\"; document.getElementById('msg').innerText = \"\";");
-htmlBuilder.Append("            btn.disabled = false; btn.innerText = \"INITIALIZE\";");
-htmlBuilder.Append("            retryBtn.style.display = \"none\";");
-htmlBuilder.Append("        }");
-htmlBuilder.Append("    </script>");
-htmlBuilder.Append("</body>");
-htmlBuilder.Append("</html>");
-htmlBuilder.Append("");
-string htmlString = htmlBuilder.ToString();
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using System.Collections;
+
+public class TypingGame : MonoBehaviour {
+    [Header("UI Elements")]
+    public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI timeText;
+    public TextMeshProUGUI highScoreText;
+    public TextMeshProUGUI rankText;
+    public TextMeshProUGUI msgText;
+    public Button mainButton;
+    public Button retryButton;
+
+    private int score = 0;
+    private float timeLeft = 10f;
+    private bool active = false;
+    private int savedScore;
+    private AudioSource audioSource;
+
+    void Start() {
+        audioSource = gameObject.AddComponent<AudioSource>();
+        savedScore = PlayerPrefs.GetInt("ultra_click_score", 0);
+        highScoreText.text = savedScore.ToString();
+        
+        retryButton.gameObject.SetActive(false);
+        mainButton.onClick.AddListener(OnClickButton);
+        retryButton.onClick.AddListener(ResetGame);
+        
+        msgText.text = "";
+        rankText.text = "";
+    }
+
+    void OnClickButton() {
+        if (timeLeft <= 0) return;
+
+        PlayTone(440 + score * 2, 0.1f);
+
+        if (!active) {
+            active = true;
+            mainButton.GetComponentInChildren<TextMeshProUGUI>().text = "HIT!!";
+            StartCoroutine(StartTimer());
+            StartCoroutine(BGMTask()); // BGM開始
+        }
+
+        score++;
+        scoreText.text = score.ToString();
+    }
+
+    IEnumerator StartTimer() {
+        while (timeLeft > 0) {
+            yield return new WaitForSeconds(1f);
+            timeLeft--;
+            timeText.text = timeLeft.ToString();
+        }
+        FinishGame();
+    }
+
+    IEnumerator BGMTask() {
+        float[] notes = { 110f, 130f, 110f, 146f };
+        int step = 0;
+        while (active) {
+            PlayTone(notes[step % notes.length], 0.2f, 0.05f);
+            step++;
+            yield return new WaitForSeconds(0.25f);
+        }
+    }
+
+    void FinishGame() {
+        active = false;
+        mainButton.interactable = false;
+        mainButton.GetComponentInChildren<TextMeshProUGUI>().text = "FINISH";
+
+        if (score > savedScore) {
+            PlayerPrefs.SetInt("ultra_click_score", score);
+            highScoreText.text = score.ToString();
+            msgText.text = "🔥 NEW RECORD! 🔥";
+            StartCoroutine(Fanfare());
+        } else {
+            PlayTone(150f, 0.5f, 0.1f);
+        }
+
+        rankText.text = GetRank(score);
+        retryButton.gameObject.SetActive(true);
+    }
+
+    IEnumerator Fanfare() {
+        float[] f = { 523f, 659f, 783f };
+        foreach (float n in f) {
+            PlayTone(n, 0.4f, 0.1f);
+            yield return new WaitForSeconds(0.1f);
+        }
+    }
+
+    string GetRank(int s) {
+        if (s >= 250) return "fraud (不正)";
+       if (s >= 200)  return "GOOD (神)"; 
+      if (s >= 150)  return "LEGEND (伝説)";
+        if (s >= 100)  return "PRO (超人)";
+        if (s >= 80)  return "semi-pro(上級者)";
+        if (s >= 50)  return "Amateur (中級者)";
+      　 return "NOOB (初心者)";
+    }
+
+    void PlayTone(float freq, float duration, float volume = 0.1f) {
+        GameObject tone = new GameObject("Tone");
+        AudioSource source = tone.AddComponent<AudioSource>();
+        int samplerate = 44100;
+        AudioClip clip = AudioClip.Create("Tone", (int)(samplerate * duration), 1, samplerate, false);
+        float[] data = new float[clip.samples];
+        for (int i = 0; i < data.Length; i++) {
+            data[i] = Mathf.Sin(2 * Mathf.PI * freq * i / samplerate) * volume;
+        }
+        clip.SetData(data, 0);
+        source.PlayOneShot(clip);
+        Destroy(tone, duration + 0.1f);
+    }
+
+    void ResetGame() {
+        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+    }
+}
