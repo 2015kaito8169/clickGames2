@@ -3,14 +3,14 @@ using UnityEngine.UI;
 
 public class ClickGame : MonoBehaviour {
     private int s = 0;
-    private Text;
+    private int h = 0;
+    private float t = 10f;
+    private bool a = false;
+    private Text u; // ←ここ！名前「u」の後にセミコロン！
 
     void Start() {
-        GameObject c = new GameObject("C");
-        c.AddComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
-        c.AddComponent<GraphicRaycaster>();
-
-        GameObject b = new GameObject("B");
+        h = PlayerPrefs.GetInt("H", 0);
+       GameObject b = new GameObject("B");
         b.transform.SetParent(c.transform);
         b.AddComponent<Button>().onClick.AddListener(() => {
             s++;
