@@ -21,13 +21,13 @@ public class ClickGame : MonoBehaviour {
 
         
         GameObject o = new GameObject("T");
-        o.transform.SetParent(cO.transform); 
-        t = o.AddComponent<Text>();
-        t.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        t.fontSize = 80;
-        t.alignment = TextAnchor.MiddleCenter;
-        t.color = Color.white;
-        t.text = "S:0";
+        co.transform.SetParent(cO.transform); 
+        u. = o.AddComponent<Text>();
+        u.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        u.fontSize = 80;
+        u.alignment = TextAnchor.MiddleCenter;
+        u.color = Color.white;
+        u.text = "S:0";
 
         
         b.onClick.AddListener(() => {
